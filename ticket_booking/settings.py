@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    'users',
-    'transports',
-    'bookings',
+    'user',
+    'transport',
+    'booking',
 ]
 
 MIDDLEWARE = [

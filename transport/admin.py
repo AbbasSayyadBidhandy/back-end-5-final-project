@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Transport
 
+admin.site.register(Transport)
 @admin.register(Transport)
 class TransportAdmin(admin.ModelAdmin):
     list_display = ('flight_number', 'departure_city', 'arrival_city', 'departure_datetime', 'arrival_datetime', 'price')

@@ -13,3 +13,10 @@ class Booking (models.Model):
 
     def __str__(self):
         return f"Booking {self.id} by {self.user.username}"
+class Passenger(models.Model):
+    name = models.CharField(max_length=100)
+    national_id = models.CharField(max_length=10)
+    user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name

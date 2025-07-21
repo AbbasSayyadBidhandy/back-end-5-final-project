@@ -11,4 +11,13 @@ class Transport(models.Model):
     total_seats = models.PositiveIntegerField(default=50)
 
     def __str__(self):
+       
         return f"{self.flight_number} | \"{self.departure_city}\" to \"{self.arrival_city}\""
+    
+TRANSPORT_TYPES = [
+    ('flight', 'Flight'),
+    ('train', 'Train'),
+    ('bus', 'Bus'),
+]
+
+transport_type = models.CharField(max_length=10, choices=TRANSPORT_TYPES)

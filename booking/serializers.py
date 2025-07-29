@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Booking
 from transport.models import Transport
 from django.utils import timezone
+from datetime import datetime
 
 
 class BookingSerializer(serializers.ModelSerializer):
@@ -11,6 +12,7 @@ class BookingSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'booking_date']
 
     def validate(self, data):
+        user = self.context['request'].user
         transport = data['transport']
         seat_number = data['seat_number']
 
@@ -24,9 +26,13 @@ class BookingSerializer(serializers.ModelSerializer):
                 "Cannot book a transport that has already departed."
             )
 
-        if Booking.objects.filter(transport=transport, seat_number=seat_number).exists():
+        if Booking.objects.filter(
+            user=user,
+            transport=transport, 
+            seat_number=seat_number
+        ).exists():
             raise serializers.ValidationError(
-                f"Seat number {seat_number} is already booked for this transport."
+                f"you have already booked seat number {seat_number} on this transport."
             )
 
         return data

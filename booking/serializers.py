@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import datetime
 
 
+
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking

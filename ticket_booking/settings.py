@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'user',
     'transport',
     'booking',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

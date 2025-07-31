@@ -3,18 +3,22 @@ from .models import Booking
 from transport.models import Transport
 from django.utils import timezone
 from datetime import datetime
-
+from transport.serializers import TransportSerializer
 
 
 class BookingSerializer(serializers.ModelSerializer):
+    transport = TransportSerializer(read_only=True)
+    transport_id = serializers.PrimaryKeyRelatedField(
+    queryset=Transport.objects.all(), write_only=True
+    )
     class Meta:
         model = Booking
-        fields = ['id', 'user', 'transport', 'seat_number', 'booking_date']
+        fields = ['id', 'user', 'transport', 'transport_id', 'seat_number', 'booking_date']
         read_only_fields = ['user', 'booking_date']
 
     def validate(self, data):
         user = self.context['request'].user
-        transport = data['transport']
+        transport = data['transport_id']
         seat_number = data['seat_number']
 
         if seat_number < 1 or seat_number > transport.total_seats:
@@ -35,5 +39,10 @@ class BookingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f"you have already booked seat number {seat_number} on this transport."
             )
-
         return data
+    
+    def create(self, validated_data):
+        validated_data['transport'] = validated_data.pop('transport_id')
+        return super().create(validated_data)
+
+        

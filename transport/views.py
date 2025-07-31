@@ -16,3 +16,7 @@ class TransportListView(generics.ListAPIView):
     filterset_class = TransportFilter
     filterset_fields = ['departure_city', 'arrival_city', 'departure_datetime', 'price']
     ordering_fields = ['price', 'departure_datetime']
+class TransportCreateView(generics.CreateAPIView):
+    queryset = Transport.objects.all()
+    serializer_class = TransportSerializer
+    permission_classes = [permissions.IsAuthenticated]

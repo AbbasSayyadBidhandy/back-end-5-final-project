@@ -2,16 +2,23 @@ from rest_framework import serializers
 from .models import Booking
 from transport.models import Transport
 from django.utils import timezone
+from datetime import datetime
+from transport.serializers import TransportSerializer
 
 
 class BookingSerializer(serializers.ModelSerializer):
+    transport = TransportSerializer(read_only=True)
+    transport_id = serializers.PrimaryKeyRelatedField(
+    queryset=Transport.objects.all(), write_only=True
+    )
     class Meta:
         model = Booking
-        fields = ['id', 'user', 'transport', 'seat_number', 'booking_date']
+        fields = ['id', 'user', 'transport', 'transport_id', 'seat_number', 'booking_date']
         read_only_fields = ['user', 'booking_date']
 
     def validate(self, data):
-        transport = data['transport']
+        user = self.context['request'].user
+        transport = data['transport_id']
         seat_number = data['seat_number']
 
         if seat_number < 1 or seat_number > transport.total_seats:
@@ -24,9 +31,18 @@ class BookingSerializer(serializers.ModelSerializer):
                 "Cannot book a transport that has already departed."
             )
 
-        if Booking.objects.filter(transport=transport, seat_number=seat_number).exists():
+        if Booking.objects.filter(
+            user=user,
+            transport=transport, 
+            seat_number=seat_number
+        ).exists():
             raise serializers.ValidationError(
-                f"Seat number {seat_number} is already booked for this transport."
+                f"you have already booked seat number {seat_number} on this transport."
             )
-
         return data
+    
+    def create(self, validated_data):
+        validated_data['transport'] = validated_data.pop('transport_id')
+        return super().create(validated_data)
+
+        
